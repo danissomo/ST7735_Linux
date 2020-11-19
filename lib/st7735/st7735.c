@@ -1,6 +1,6 @@
 /* vim: set ai et ts=4 sw=4: */
 #include "st7735.h"
-
+#include "gpiomacro.h"
 #define DELAY 0x80
 int spidev_file;
 // based on Adafruit ST7735 library for Arduino

@@ -7,8 +7,6 @@
 #include "spi_macro/spi_macro.h"
 #include <linux/types.h>
 #include <stdlib.h>
-#include "orangepiwin.h"
-#include "gpiomacro.h"
 #include <time.h>
 
 
