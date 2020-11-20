@@ -11,7 +11,9 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-
+static const uint8_t     spiBPW   = 8 ;
+static const uint16_t    spiDelay = 0 ;
+static const unsigned int    spiSpeed = 1000000 ;
 char buf[10];
 char buf2[10];
 int com_serial;
@@ -25,7 +27,7 @@ struct spi_ioc_transfer xfer[2];
 int spi_init(char filename[40]) {
     int file;
     __u8 mode, lsb, bits;
-    __u32 speed = 2500000;
+    __u32 speed = 160000;
 
     if ((file = open(filename, O_RDWR)) < 0) {
         printf("Failed to open the bus.");
@@ -34,17 +36,13 @@ int spi_init(char filename[40]) {
         exit(1);
     }
 
-    if (ioctl(file, SPI_IOC_RD_MODE, &mode) < 0) {
-        perror("SPI rd_mode");
-        return -1;
-    }
     if (ioctl(file, SPI_IOC_RD_LSB_FIRST, &lsb) < 0) {
         perror("SPI rd_lsb_fist");
         return -1;
     }
     //sunxi supports only 8 bits
 
-    if (ioctl(file, SPI_IOC_WR_BITS_PER_WORD, (__u8[1]){8}) < 0) {
+    if (ioctl(file, SPI_IOC_WR_BITS_PER_WORD, &spiBPW) < 0) {
         perror("can't set bits per word");
         return -1;
     }
@@ -54,7 +52,7 @@ int spi_init(char filename[40]) {
         return -1;
     }
 
-    if (ioctl(file, SPI_IOC_WR_MAX_SPEED_HZ, &speed) < 0) {
+    if (ioctl(file, SPI_IOC_WR_MAX_SPEED_HZ, &spiSpeed) < 0) {
         perror("can't set max speed hz");
         return -1;
     }
@@ -63,20 +61,8 @@ int spi_init(char filename[40]) {
         perror("SPI max_speed_hz");
         return -1;
     }
-
-    printf("%s: spi mode %d, %d bits %sper word, %d Hz max\n", filename, mode, bits, lsb ? "(lsb first) " : "", speed);
-
-    //xfer[0].tx_buf = (unsigned long)buf;
-    xfer[0].len = 3;                 /* Length of  command to write*/
-    xfer[0].cs_change = 0;           /* Keep CS activated */
-    xfer[0].delay_usecs = 0,         //delay in us
-        xfer[0].speed_hz = 2500000,  //speed
-        xfer[0].bits_per_word = 8,   // bites per word 8
-
-        //xfer[1].rx_buf = (unsigned long) buf2;
-        xfer[1].len = 4;   /* Length of Data to read */
-    xfer[1].cs_change = 0; /* Keep CS activated */
-    xfer[0].delay_usecs = 0;
+    
+    printf("%s: spi mode %d, %d bits %sper word, %d Hz max\n", filename, mode, bits, lsb ? "(lsb first) " : "(msb first) ", speed);
 
     return file;
 }
@@ -85,16 +71,18 @@ int spi_init(char filename[40]) {
 // Write buffer to spi
 //////////
 void spi_write(int file, uint8_t* bytes, int bufsize) {
-    uint8_t buf[32];
-    memcpy(buf, bytes, bufsize);
-    xfer[0].rx_buf = (unsigned long long)buf;
-    xfer[0].len = bufsize;
-    int status = ioctl(file, SPI_IOC_MESSAGE(1), xfer);
-    if (status < 0) {
-        perror("SPI_IOC_MESSAGE");
-        return;
-    }
+    struct spi_ioc_transfer spi ;
+// Mentioned in spidev.h but not used in the original kernel documentation
+//	test program )-:
 
-    com_serial = 1;
-    failcount = 0;
+  memset (&spi, 0, sizeof (spi)) ;
+
+  spi.tx_buf        = (unsigned long)bytes ;
+  spi.rx_buf        = (unsigned long)bytes ;
+  spi.len           = bufsize ;
+  spi.delay_usecs   = spiDelay ;
+  spi.speed_hz      = spiSpeed ;
+  spi.bits_per_word = spiBPW ;
+
+  ioctl (file, SPI_IOC_MESSAGE(1), &spi) ;
 }

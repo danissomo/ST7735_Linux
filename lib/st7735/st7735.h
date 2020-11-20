@@ -18,35 +18,31 @@
 #define ST7735_MADCTL_BGR 0x08
 #define ST7735_MADCTL_MH  0x04
 
-/*** Redefine if necessary ***/
-#define ST7735_SPI_PORT hspi1
 
-#define ST7735_RES_Pin       7
-#define ST7735_RES_GPIO_Port GPIOC
-#define ST7735_CS_Pin        6
-#define ST7735_CS_GPIO_Port  GPIOB
-#define ST7735_DC_Pin        9
-#define ST7735_DC_GPIO_Port  GPIOA
+
+#define ST7735_RES_Pin       361
+#define ST7735_CS_Pin        100
+#define ST7735_DC_Pin        68
 
 // AliExpress/eBay 1.8" display, default orientation
-/*
-#define ST7735_IS_160X128 1
-#define ST7735_WIDTH  128
-#define ST7735_HEIGHT 160
-#define ST7735_XSTART 0
-#define ST7735_YSTART 0
-#define ST7735_ROTATION (ST7735_MADCTL_MX | ST7735_MADCTL_MY)
-*/
+
+// #define ST7735_IS_160X128 1
+// #define ST7735_WIDTH  128
+// #define ST7735_HEIGHT 160
+// #define ST7735_XSTART 0
+// #define ST7735_YSTART 0
+// #define ST7735_ROTATION (ST7735_MADCTL_MX | ST7735_MADCTL_MY)
+
 
 // AliExpress/eBay 1.8" display, rotate right
-/*
+
 #define ST7735_IS_160X128 1
 #define ST7735_WIDTH  160
 #define ST7735_HEIGHT 128
 #define ST7735_XSTART 0
 #define ST7735_YSTART 0
 #define ST7735_ROTATION (ST7735_MADCTL_MY | ST7735_MADCTL_MV)
-*/
+
 
 // AliExpress/eBay 1.8" display, rotate left
 /*
@@ -109,12 +105,12 @@
 */
 
 // 1.44" display, default orientation
-#define ST7735_IS_128X128 1
-#define ST7735_WIDTH  128
-#define ST7735_HEIGHT 128
-#define ST7735_XSTART 2
-#define ST7735_YSTART 3
-#define ST7735_ROTATION (ST7735_MADCTL_MX | ST7735_MADCTL_MY | ST7735_MADCTL_BGR)
+// #define ST7735_IS_128X128 1
+// #define ST7735_WIDTH  128
+// #define ST7735_HEIGHT 128
+// #define ST7735_XSTART 2
+// #define ST7735_YSTART 3
+// #define ST7735_ROTATION (ST7735_MADCTL_MX | ST7735_MADCTL_MY | ST7735_MADCTL_BGR)
 
 // 1.44" display, rotate right
 /*

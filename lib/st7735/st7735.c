@@ -83,11 +83,11 @@ void _ST7735_Unselect() {
 }
 
 static void ST7735_Reset() {
-    set_pin(ST7735_RES_Pin, GPIO_SET);
+    set_pin(ST7735_RES_Pin, GPIO_RESET);
     
     struct timespec tw = {0, 5}, tr;
     nanosleep(&tw, &tr);
-    set_pin(ST7735_RES_Pin, GPIO_RESET);
+    set_pin(ST7735_RES_Pin, GPIO_SET);
 }
 
 static void ST7735_WriteCommand(uint8_t cmd) {
@@ -100,8 +100,11 @@ static void ST7735_WriteCommand(uint8_t cmd) {
 static void ST7735_WriteData(uint8_t* buff, size_t buff_size) {
     // HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
     // HAL_SPI_Transmit(&ST7735_SPI_PORT, buff, buff_size, HAL_MAX_DELAY);
+    
+    
     set_pin(ST7735_DC_Pin, GPIO_SET);
     spi_write(spidev_file, buff, buff_size);
+    
 }
 
 static void ST7735_ExecuteCommandList(const uint8_t* addr) {
@@ -155,7 +158,7 @@ void ST7735_Init() {
     export_pin(ST7735_RES_Pin);
     set_direction(ST7735_RES_Pin, OUTPUT);
     
-    spidev_file = spi_init("/dev/spidev0.1");
+    spidev_file = spi_init("/dev/spidev1.0");
     _ST7735_Select();
     ST7735_Reset();
     ST7735_ExecuteCommandList(init_cmds1);
