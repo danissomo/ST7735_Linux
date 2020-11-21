@@ -2,7 +2,7 @@
 #include "st7735.h"
 #include "gpiomacro.h"
 #define DELAY 0x80
-int spidev_file;
+int spidev_file = -1;
 // based on Adafruit ST7735 library for Arduino
 static const uint8_t
     init_cmds1[] = {            // Init for 7735R, part 1 (red or green tab)
@@ -84,24 +84,17 @@ void _ST7735_Unselect() {
 
 static void ST7735_Reset() {
     set_pin(ST7735_RES_Pin, GPIO_RESET);
-    
     struct timespec tw = {0, 5}, tr;
     nanosleep(&tw, &tr);
     set_pin(ST7735_RES_Pin, GPIO_SET);
 }
 
 static void ST7735_WriteCommand(uint8_t cmd) {
-    //HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_RESET);
-    //HAL_SPI_Transmit(&ST7735_SPI_PORT, &cmd, sizeof(cmd), HAL_MAX_DELAY);
     set_pin(ST7735_DC_Pin, GPIO_RESET);
     spi_write(spidev_file, &cmd, sizeof(cmd));
 }
 
 static void ST7735_WriteData(uint8_t* buff, size_t buff_size) {
-    // HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
-    // HAL_SPI_Transmit(&ST7735_SPI_PORT, buff, buff_size, HAL_MAX_DELAY);
-    
-    
     set_pin(ST7735_DC_Pin, GPIO_SET);
     spi_write(spidev_file, buff, buff_size);
     
@@ -159,6 +152,7 @@ void ST7735_Init() {
     set_direction(ST7735_RES_Pin, OUTPUT);
     
     spidev_file = spi_init("/dev/spidev1.0");
+
     _ST7735_Select();
     ST7735_Reset();
     ST7735_ExecuteCommandList(init_cmds1);
@@ -180,6 +174,7 @@ void ST7735_DrawPixel(uint16_t x, uint16_t y, uint16_t color) {
     _ST7735_Unselect();
 }
 
+
 static void ST7735_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint16_t color, uint16_t bgcolor) {
     uint32_t i, b, j;
 
@@ -199,6 +194,7 @@ static void ST7735_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint
     }
 }
 
+
 void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor) {
     _ST7735_Select();
 
@@ -211,7 +207,6 @@ void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, u
             }
 
             if (*str == ' ') {
-                // skip spaces in the beginning of the new line
                 str++;
                 continue;
             }
@@ -225,6 +220,7 @@ void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, u
     _ST7735_Unselect();
 }
 
+
 void ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color) {
     // clipping
     if ((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT)) return;
@@ -232,20 +228,18 @@ void ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16
     if ((y + h - 1) >= ST7735_HEIGHT) h = ST7735_HEIGHT - y;
 
     ST7735_SetAddressWindow(x, y, x + w - 1, y + h - 1);
-
-    uint8_t data[] = {color >> 8, color & 0xFF};
-    //HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
+    
+    uint16_t data[ST7735_WIDTH * ST7735_HEIGHT];
     set_pin(ST7735_DC_Pin, GPIO_SET);
-    for (y = h; y > 0; y--) {
-        for (x = w; x > 0; x--) {
-            spi_write(spidev_file, data, sizeof(data));
-        }
-    }
+    for(int i = 0; i < h*w; i ++)
+            data[i] = color; 
+     spi_write(spidev_file, (uint8_t*)data, 2*w*h);
 }
 
 void ST7735_FillScreen(uint16_t color) {
     ST7735_FillRectangle(0, 0, ST7735_WIDTH, ST7735_HEIGHT, color);
 }
+
 
 void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data) {
     if ((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT)) return;
@@ -257,6 +251,7 @@ void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint
     ST7735_WriteData((uint8_t*)data, sizeof(uint16_t) * w * h);
     _ST7735_Unselect();
 }
+
 
 void ST7735_InvertColors(bool invert) {
     _ST7735_Select();

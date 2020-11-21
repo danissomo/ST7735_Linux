@@ -8,6 +8,7 @@
 #include <linux/types.h>
 #include <stdlib.h>
 #include <time.h>
+#include "orangepiwin.h"
 
 
 #define ST7735_MADCTL_MY  0x80
@@ -20,9 +21,9 @@
 
 
 
-#define ST7735_RES_Pin       361
-#define ST7735_CS_Pin        100
-#define ST7735_DC_Pin        68
+#define ST7735_RES_Pin       PIN_16
+#define ST7735_CS_Pin        PIN_12
+#define ST7735_DC_Pin        PIN_18
 
 // AliExpress/eBay 1.8" display, default orientation
 
@@ -35,7 +36,6 @@
 
 
 // AliExpress/eBay 1.8" display, rotate right
-
 #define ST7735_IS_160X128 1
 #define ST7735_WIDTH  160
 #define ST7735_HEIGHT 128
