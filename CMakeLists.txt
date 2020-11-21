@@ -20,6 +20,7 @@ add_subdirectory(lib)
 
 file(GLOB source "./src/*.c")
 add_executable(omega_st7735 ${source})
-target_link_libraries(omega_st7735 PUBLIC st7735)
+target_link_libraries(omega_st7735 PUBLIC st7735 drawing)
 target_include_directories(omega_st7735 PUBLIC lib)
+target_link_libraries(omega_st7735 PUBLIC m)
 target_include_directories(omega_st7735 PUBLIC gpio_lib)

@@ -198,7 +198,7 @@ static void ST7735_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint
 void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor) {
     _ST7735_Select();
 
-    while (*str) {
+    while (*str != '\0') {
         if (x + font.width >= ST7735_WIDTH) {
             x = 0;
             y += font.height;
@@ -206,11 +206,12 @@ void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, u
                 break;
             }
 
-            if (*str == ' ') {
+            if (*str == ' '  ) {
                 str++;
                 continue;
             }
         }
+        if(*str == '\n') break;
 
         ST7735_WriteChar(x, y, *str, font, color, bgcolor);
         x += font.width;
@@ -231,8 +232,11 @@ void ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16
     
     uint16_t data[ST7735_WIDTH * ST7735_HEIGHT];
     set_pin(ST7735_DC_Pin, GPIO_SET);
-    for(int i = 0; i < h*w; i ++)
-            data[i] = color; 
+    if(color & 0xFF00 == color)
+        memset(data, color , 2*ST7735_WIDTH * ST7735_HEIGHT);
+    else
+        for(size_t i= 0; i< ST7735_WIDTH * ST7735_HEIGHT; i++)
+            data[i] = color;
      spi_write(spidev_file, (uint8_t*)data, 2*w*h);
 }
 
