@@ -27,17 +27,17 @@ int main(){
    //ST7735_WriteString(0, 0, "fuck orangepi", Font_11x18, ST7735_YELLOW, ST7735_WHITE);
     ST7735_DrawImage(0, 0, 128,128, (uint16_t*)test_img_128x128);
     getc(stdin);
-    // while (1){
-    //     point p1 =  {0, 60}, p2 = {159, 0}, fbsize = { ST7735_WIDTH, ST7735_HEIGHT };
-    //     for (size_t i =0; i < ST7735_HEIGHT ; i+=2){
-    //         p2.y = i;
-    //         draw_line (frame_buffer, fbsize, p1, p2, 0xE607);
-    //         ST7735_DrawImage(0, 0, ST7735_WIDTH, ST7735_HEIGHT, frame_buffer);   
-    //         //ST7735_FillRectangle(p1.x, p1.y, p2.x, p2.y, 0xE607);
-    //         memset(frame_buffer, 0, sizeof(frame_buffer));
-    //     } 
+    while (1){
+        point p1 =  {0, 60}, p2 = {159, 0}, fbsize = { ST7735_WIDTH, ST7735_HEIGHT };
+        for (size_t i =0; i < ST7735_HEIGHT ; i+=2){
+            p2.y = i;
+            draw_line (frame_buffer, fbsize, p1, p2, 0xE607);
+            ST7735_DrawImage(0, 0, ST7735_WIDTH, ST7735_HEIGHT, frame_buffer);   
+            //ST7735_FillRectangle(p1.x, p1.y, p2.x, p2.y, 0xE607);
+            memset(frame_buffer, 0, sizeof(frame_buffer));
+        } 
 
-    // }
+    }
     while(1){
         char string[100];
         fgets(string, 100, stdin);
