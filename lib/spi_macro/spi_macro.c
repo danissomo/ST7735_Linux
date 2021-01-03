@@ -13,7 +13,7 @@
 
 static const uint8_t     spiBPW   = 8 ;
 static const uint16_t    spiDelay = 0 ;
-static const unsigned int    spiSpeed = 80*1000*1000 ;
+static const unsigned int    spiSpeed = 2000000;
 char buf[10];
 char buf2[10];
 int com_serial;

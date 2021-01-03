@@ -151,7 +151,7 @@ void ST7735_Init() {
     export_pin(ST7735_RES_Pin);
     set_direction(ST7735_RES_Pin, OUTPUT);
     
-    spidev_file = spi_init("/dev/spidev1.0");
+    spidev_file = spi_init(SPI_BUS_NAME);
 
     _ST7735_Select();
     ST7735_Reset();

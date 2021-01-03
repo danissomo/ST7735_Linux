@@ -10,6 +10,7 @@
 #include <time.h>
 #include "omega2.h"
 
+#define SPI_BUS_NAME "/dev/spidev0.1"
 
 #define ST7735_MADCTL_MY  0x80
 #define ST7735_MADCTL_MX  0x40
