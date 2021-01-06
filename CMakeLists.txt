@@ -4,9 +4,9 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR mips)
 
 
-set(CMAKE_STAGING_PREFIX /home/dan/source/staging_dir)
 
-set(tools /home/dan/source/staging_dir/toolchain-mipsel_24kc_gcc-7.3.0_musl)
+set(CMAKE_STAGING_PREFIX $ENV{HOME}/source/staging_dir)
+set(tools $ENV{HOME}/source/staging_dir/toolchain-mipsel_24kc_gcc-7.3.0_musl)
 set(CMAKE_C_COMPILER ${tools}/bin/mipsel-openwrt-linux-gcc)
 set(CMAKE_CXX_COMPILER ${tools}/bin/mipsel-openwrt-linux-g++)
 

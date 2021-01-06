@@ -23,7 +23,7 @@
 
 
 #define ST7735_RES_Pin       PIN_17
-#define ST7735_CS_Pin        PIN_16
+//#define ST7735_CS_Pin        PIN_16
 #define ST7735_DC_Pin        PIN_15
 
 // AliExpress/eBay 1.8" display, default orientation

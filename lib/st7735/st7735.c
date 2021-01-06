@@ -72,8 +72,9 @@ static const uint8_t
         0x03, 0x1d, 0x07, 0x06, 0x2E, 0x2C, 0x29, 0x2D, 0x2E, 0x2E, 0x37, 0x3F, 0x00, 0x00, 0x02, 0x10, ST7735_NORON, DELAY,  //  3: Normal display on, no args, w/delay
         10,                                                                                                                   //     10 ms delay
         ST7735_DISPON, DELAY,                                                                                                 //  4: Main screen turn on, no args w/delay
-        100};                                                                                                                 //     100 ms delay
-
+        100};    
+                                                                                                                     //     100 ms delay
+#ifdef ST7735_CS_Pin
 static void _ST7735_Select() {
     set_pin(ST7735_CS_Pin, GPIO_SET);
 }
@@ -81,6 +82,7 @@ static void _ST7735_Select() {
 void _ST7735_Unselect() {
     set_pin(ST7735_CS_Pin, GPIO_RESET);
 }
+#endif
 
 static void ST7735_Reset() {
     set_pin(ST7735_RES_Pin, GPIO_RESET);
@@ -144,34 +146,46 @@ static void ST7735_SetAddressWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t 
 }
 
 void ST7735_Init() {
+    #ifdef ST7735_CS_Pin
     export_pin(ST7735_CS_Pin);
     set_direction(ST7735_CS_Pin, OUTPUT);
+    #endif
     export_pin(ST7735_DC_Pin);
     set_direction(ST7735_DC_Pin, OUTPUT);
     export_pin(ST7735_RES_Pin);
     set_direction(ST7735_RES_Pin, OUTPUT);
     
     spidev_file = spi_init(SPI_BUS_NAME);
-
+    
+    #ifdef ST7735_CS_Pin
     _ST7735_Select();
+    #endif
+
     ST7735_Reset();
     ST7735_ExecuteCommandList(init_cmds1);
     ST7735_ExecuteCommandList(init_cmds2);
     ST7735_ExecuteCommandList(init_cmds3);
+
+    #ifdef ST7735_CS_Pin
     _ST7735_Unselect();
+    #endif
 }
 
 void ST7735_DrawPixel(uint16_t x, uint16_t y, uint16_t color) {
     if ((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT))
         return;
-
+    
+    #ifdef ST7735_CS_Pin
     _ST7735_Select();
+    #endif
 
     ST7735_SetAddressWindow(x, y, x + 1, y + 1);
     uint8_t data[] = {color >> 8, color & 0xFF};
     ST7735_WriteData(data, sizeof(data));
 
+    #ifdef ST7735_CS_Pin
     _ST7735_Unselect();
+    #endif
 }
 
 
@@ -196,8 +210,9 @@ static void ST7735_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint
 
 
 void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor) {
+    #ifdef ST7735_CS_Pin
     _ST7735_Select();
-
+    #endif
     while (*str != '\0') {
         if (x + font.width >= ST7735_WIDTH) {
             x = 0;
@@ -217,8 +232,9 @@ void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, u
         x += font.width;
         str++;
     }
-
+    #ifdef ST7735_CS_Pin
     _ST7735_Unselect();
+    #endif
 }
 
 
@@ -250,15 +266,27 @@ void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint
     if ((x + w - 1) >= ST7735_WIDTH) return;
     if ((y + h - 1) >= ST7735_HEIGHT) return;
 
+    #ifdef ST7735_CS_Pin
     _ST7735_Select();
+    #endif
+
     ST7735_SetAddressWindow(x, y, x + w - 1, y + h - 1);
     ST7735_WriteData((uint8_t*)data, sizeof(uint16_t) * w * h);
+
+    #ifdef ST7735_CS_Pin
     _ST7735_Unselect();
+    #endif
 }
 
 
 void ST7735_InvertColors(bool invert) {
+    #ifdef ST7735_CS_Pin
     _ST7735_Select();
+    #endif
+
     ST7735_WriteCommand(invert ? ST7735_INVON : ST7735_INVOFF);
+
+    #ifdef ST7735_CS_Pin
     _ST7735_Unselect();
+    #endif
 }

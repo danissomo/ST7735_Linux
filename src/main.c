@@ -22,8 +22,8 @@ int main(){
     //     //sleep(1);
     // }
 
-   
-    //ST7735_FillScreen(ST7735_WHITE);
+   for (uint16_t i = 0;; i++)
+    ST7735_FillScreen(i);
    //ST7735_WriteString(0, 0, "fuck orangepi", Font_11x18, ST7735_YELLOW, ST7735_WHITE);
     ST7735_DrawImage(0, 0, 128,128, (uint16_t*)test_img_128x128);
     getc(stdin);
